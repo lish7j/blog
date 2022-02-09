@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tshaojl.blog.dao.CatalogMapper">
+    <resultMap id="Catalog" type="com.tshaojl.blog.domain.Catalog">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <association property="user" javaType="com.tshaojl.blog.domain.User">
+            <id column="uid" property="id"/>
+            <result column="avatar" property="avatar"/>
+            <result column="email" property="email"/>
+            <result column="name" property="name"/>
+            <result column="password" property="password"/>
+            <result column="username" property="username"/>
+        </association>
+    </resultMap>
+
+
+    <select id="findByUser" parameterType="com.tshaojl.blog.domain.User" resultMap="Catalog">
+        select
+        c.id, c.name, u.id as uid, u.avatar, u.email, u.name, u.password, u.username
+        from catalog c, user u
+        where c.user_id = #{id} and u.id = #{id}
+    </select>
+
+    <select id="findByUserId" parameterType="java.lang.Long" resultMap="Catalog">
+        select
+            c.id, c.name, u.id as uid, u.avatar, u.email, u.name, u.password, u.username
+        from catalog c, user u
+        where c.user_id = #{userId} and u.id = #{userId}
+    </select>
+
+    <select id="findByUserAndName" resultMap="Catalog">
+        select
+            c.id, c.name, u.id as uid, u.avatar, u.email, u.name, u.password, u.username
+        from catalog c, user u
+        where c.user_id = #{user.id} and u.id = #{user.id} and c.name = #{name}
+    </select>
+
+
+<!--    <delete id="deleteById" parameterType="java.lang.Long">-->
+<!--        delete from vote where id = #{id};-->
+<!--    </delete>-->
+
+</mapper>

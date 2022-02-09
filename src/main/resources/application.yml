@@ -1,0 +1,34 @@
+spring:
+  thymeleaf:
+    mode: HTML
+    cache: false
+    servlet:
+      content-type: text/html
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost/blog?useSSL=false&serverTimezone=UTC&allowMultiQueries=true
+    username: root
+    password: 123456
+    schema: classpath:blogs_2.sql
+  #  data:
+#    elasticsearch:
+#      cluster-nodes: localhost:9300
+#      cluster-name: my-application
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  main:
+    allow-bean-definition-overriding: true
+logging:
+  level:
+    org.springframework.data.elasticsearch.client.WIRE: TRACE
+mybatis:
+  type-aliases-package: com.lishj.demo.pojo
+  type-handlers-package: com.lishj.demo.dao
+  mapper-locations: classpath:mappers/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
