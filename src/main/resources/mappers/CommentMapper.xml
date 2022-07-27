@@ -3,37 +3,26 @@
 <mapper namespace="com.tshaojl.blog.dao.CommentMapper">
     <resultMap id="Comment" type="com.tshaojl.blog.domain.Comment">
         <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="content" jdbcType="VARCHAR" property="name"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="vote_size" jdbcType="INT" property="voteSize"/>
-        <association property="user" javaType="com.tshaojl.blog.domain.User">
-            <id column="uid" property="id"/>
-            <result column="avatar" property="avatar"/>
-            <result column="email" property="email"/>
-            <result column="name" property="name"/>
-            <result column="password" property="password"/>
-            <result column="username" property="username"/>
-        </association>
-        <collection property="votes" ofType="com.tshaojl.blog.domain.CommentVote">
-            <id column="vid" property="id"/>
-            <association property="user" javaType="com.tshaojl.blog.domain.User">
-                <id column="uid" property="id"/>
-                <result column="avatar" property="avatar"/>
-                <result column="email" property="email"/>
-                <result column="name" property="name"/>
-                <result column="password" property="password"/>
-                <result column="username" property="username"/>
-            </association>
-        </collection>
+        <result column="vote_size" jdbcType="INTEGER" property="voteSize"/>
+        <result column="user_id" property="userId"/>
     </resultMap>
 
 
-    <select id="findById" parameterType="java.lang.Integer" resultMap="Comment">
+    <select id="findById" parameterType="java.lang.Long" resultMap="Comment">
         select
-        c.id, c.name, u.id as uid, u.avatar, u.email, u.name, u.password, u.username
-        from catalog c, user u
-        where c.user_id = #{id} and u.id = #{id}
+        id, content, create_time, user_id
+        from comment
+        where id = #{id}
     </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from comment
+        where id = #{id}
+    </delete>
+
+
 
 
 </mapper>

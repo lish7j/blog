@@ -30,7 +30,7 @@ class CatalogMapperTest {
         List<Catalog> catalogList = catalogMapper.findByUser(user);
         for (Catalog catalog : catalogList) {
 
-            log.info(String.format("%d %s %d %s", catalog.getId(), catalog.getName(), catalog.getUser().getId(), catalog.getUser().getUsername()));
+            //log.info(String.format("%d %s %d %s", catalog.getId(), catalog.getName(), catalog.getUser().getId(), catalog.getUser().getUsername()));
         }
     }
 
@@ -40,7 +40,7 @@ class CatalogMapperTest {
         List<Catalog> catalogList = catalogMapper.findByUserId(3L);
         for (Catalog catalog : catalogList) {
 
-            log.info(String.format("%d %s %d %s", catalog.getId(), catalog.getName(), catalog.getUser().getId(), catalog.getUser().getUsername()));
+           // log.info(String.format("%d %s %d %s", catalog.getId(), catalog.getName(), catalog.getUser().getId(), catalog.getUser().getUsername()));
         }
     }
 
@@ -48,8 +48,8 @@ class CatalogMapperTest {
     void findByUserAndName() {
         User user = new User();
         user.setId(3L);
-        Catalog catalog = catalogMapper.findByUserAndName(user, "java");
-        log.info(String.format("%d %s %d %s", catalog.getId(), catalog.getName(), catalog.getUser().getId(), catalog.getUser().getUsername()));
+        Catalog catalog = catalogMapper.findByUserAndName(user.getId(), "java");
+        log.info(String.format("%d %s %d %s", catalog.getId(), catalog.getName()));
 
     }
 }

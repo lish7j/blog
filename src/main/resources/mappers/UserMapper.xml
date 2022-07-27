@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tshaojl.blog.dao.UserMapper">
+    <resultMap id="User" type="com.tshaojl.blog.domain.User">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+    </resultMap>
+
+    <select id="findByNameLike" resultMap="User">
+        select
+            id, avatar, email, name, password, username
+        from user
+        where name like concat('%', #{name}, '%') limit #{start}, #{limit}
+    </select>
+
+    <select id="findByUsername" resultMap="User">
+        select
+            id, avatar, email, name, password, username
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="findById" resultMap="User">
+        select
+            id, avatar, email, name, password, username
+        from user
+        where id = #{id}
+    </select>
+
+    <select id="findByUsernameIn" resultMap="User">
+        select
+        id, avatar, email, name, password, username
+        from user
+        where username IN
+        <foreach collection="usernames" item="uns" open="(" close=")" separator=",">
+            #{uns}
+        </foreach>
+    </select>
+
+    <select id="findAll" resultMap="User">
+        select
+        id, avatar, email, name, password, username
+        from user
+    </select>
+
+    <insert id="addUser" parameterType="com.tshaojl.blog.domain.User" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into user(name, email, username, password)
+        values (
+                   #{name}, #{email}, #{username}, #{password}
+               )
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from user
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteInBatch">
+        delete from user
+        where id IN
+        <foreach collection="users" item="user" open="(" close=")" separator=",">
+            #{user.id}
+        </foreach>
+    </delete>
+
+    <update id="updateUser">
+        update user
+        set
+            name = #{name}, email = #{email}, password = #{password}, username = #{username}
+        where id = #{id}
+    </update>
+
+
+</mapper>

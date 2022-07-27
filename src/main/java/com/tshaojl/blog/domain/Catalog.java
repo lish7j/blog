@@ -15,24 +15,10 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class Catalog implements Serializable {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // 自增长策略
-	private Long id; // 用户的唯一标识
 
-	@NotEmpty(message = "名称不能为空")
-	@Size(min=2, max=30)
-	@Column(nullable = false) // 映射为字段，值不能为空
+	private Long id;
 	private String name;
- 
-	@OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
-	@JoinColumn(name="user_id")
-	private User user;
+	private Long userId;
 
-	
-	public Catalog(User user, String name) {
-		this.name = name;
-		this.user = user;
-	}
 }

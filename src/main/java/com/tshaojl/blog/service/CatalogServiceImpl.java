@@ -1,5 +1,6 @@
 package com.tshaojl.blog.service;
 
+import com.tshaojl.blog.dao.CatalogMapper;
 import com.tshaojl.blog.domain.Catalog;
 import com.tshaojl.blog.domain.User;
 import com.tshaojl.blog.repository.CatalogRepository;
@@ -14,36 +15,36 @@ import java.util.List;
 @Service
 public class CatalogServiceImpl implements CatalogService{
 
-	private final CatalogRepository catalogRepository;
+	private final CatalogMapper catalogMapper;
 
 	@Autowired
-	public CatalogServiceImpl(CatalogRepository catalogRepository) {
-		this.catalogRepository = catalogRepository;
+	public CatalogServiceImpl(CatalogMapper catalogMapper) {
+		this.catalogMapper = catalogMapper;
 	}
 
 	@Override
 	public void saveCatalog(Catalog catalog) {
 		// 判断重复
-		List<Catalog> list = catalogRepository.findByUserAndName(catalog.getUser(), catalog.getName());
-		if(list !=null && !list.isEmpty()) {
+		Catalog oldCatalog = catalogMapper.findByUserAndName(catalog.getUserId(), catalog.getName());
+		if (catalog != null) {
 			throw new IllegalArgumentException("该分类已经存在了");
 		}
-		catalogRepository.save(catalog);
+		catalogMapper.insert(catalog);
 	}
 
 	@Override
 	public void removeCatalog(Long id) {
-		catalogRepository.deleteById(id);
+		catalogMapper.deleteById(id);
 	}
 
 	@Override
 	public Catalog getCatalogById(Long id) {
-		return catalogRepository.findById(id).orElse(null);
+		return catalogMapper.findById(id);
 	}
 
 	@Override
 	public List<Catalog> listCatalogs(User user) {
-		return catalogRepository.findByUser(user);
+		return catalogMapper.findByUser(user);
 	}
 
 }

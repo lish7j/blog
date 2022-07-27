@@ -4,6 +4,7 @@ import com.tshaojl.blog.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public interface UserService {
 	/**
 	 * 根据用户名进行分页模糊查询
 	 */
-	Page<User> listUsersByNameLike(String name, Pageable pageable);
+	List<User> listUsersByNameLike(String name, Integer start, Integer limit);
 	
 	/**
 	 * 更具名称列表查询

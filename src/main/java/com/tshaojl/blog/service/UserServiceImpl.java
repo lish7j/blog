@@ -1,7 +1,9 @@
 package com.tshaojl.blog.service;
 
+import com.tshaojl.blog.dao.UserMapper;
 import com.tshaojl.blog.domain.User;
 import com.tshaojl.blog.repository.UserRepository;
+import org.apache.lucene.analysis.standard.UAX29URLEmailAnalyzer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,61 +21,61 @@ import java.util.List;
 @Service("UserService")
 public class UserServiceImpl  implements UserService , UserDetailsService {
 
-	private final UserRepository userRepository;
+	private final UserMapper userMapper;
 
 	@Autowired
-	public UserServiceImpl(UserRepository userRepository) {
-		this.userRepository = userRepository;
+	public UserServiceImpl(UserMapper userMapper) {
+		this.userMapper = userMapper;
 	}
 
 	@Transactional
 	@Override
 	public User saveUser(User user) {
-		return userRepository.save(user);
+		return userMapper.addUser(user);
 	}
 
 	@Transactional
 	@Override
 	public void removeUser(Long id) {
-		userRepository.deleteById(id);
+		userMapper.deleteById(id);
 	}
 
 	@Transactional
 	@Override
 	public void removeUsersInBatch(List<User> users) {
-		userRepository.deleteInBatch(users);
+		userMapper.deleteInBatch(users);
 	}
 	
 	@Transactional
 	@Override
 	public User updateUser(User user) {
-		return userRepository.save(user);
+		userMapper.updateUser(user);
+		return userMapper.findById(user.getId());
 	}
 
 	@Override
 	public User getUserById(Long id) {
-		return userRepository.getOne(id);
+		return userMapper.findById(id);
 	}
 
 	@Override
 	public List<User> listUsers() {
-		return userRepository.findAll();
+		return userMapper.findAll();
 	}
 
 	@Override
-	public Page<User> listUsersByNameLike(String name, Pageable pageable) {
+	public List<User> listUsersByNameLike(String name, Integer start, Integer limit) {
 		// 模糊查询
-		name = "%" + name + "%";
-		return userRepository.findByNameLike(name, pageable);
+		return userMapper.findByNameLike(name, start, limit);
 	}
 
 	public UserDetails loadUserByUsername(String username){
-		return userRepository.findByUsername(username);
+		return userMapper.findByUsername(username);
 	}
 
 	@Override
 	public List<User> listUsersByUsernames(Collection<String> usernames) {
-		return userRepository.findByUsernameIn(usernames);
+		return userMapper.findByUsernameIn(usernames);
 	}
 
 }

@@ -6,4 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TagMapper {
     Tag findByName(String name);
+
+    void insert(Tag tag);
+
+    void update(Tag tag);
 }

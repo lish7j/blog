@@ -1,6 +1,7 @@
 package com.tshaojl.blog.domain.es;
 
 import com.tshaojl.blog.domain.Blog;
+import com.tshaojl.blog.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,13 +50,13 @@ public class EsBlog implements Serializable {
 
 
 	
-	public EsBlog(Blog blog){
+	public EsBlog(Blog blog, User user){
 		this.blogId = blog.getId();
 		this.title = blog.getTitle();
 		this.summary = blog.getSummary();
 		this.content = blog.getContent();
-		this.username = blog.getUser().getUsername();
-		this.avatar = blog.getUser().getAvatar();
+		this.username = user.getUsername();
+		this.avatar = user.getAvatar();
 		this.createTime = blog.getCreateTime();
 		this.readSize = blog.getReadSize();
 		this.commentSize = blog.getCommentSize();
@@ -63,13 +64,13 @@ public class EsBlog implements Serializable {
 		this.tags = blog.getTags();
 	}
  
-	public void update(Blog blog){
+	public void update(Blog blog, User user){
 		this.blogId = blog.getId();
 		this.title = blog.getTitle();
 		this.summary = blog.getSummary();
 		this.content = blog.getContent();
-		this.username = blog.getUser().getUsername();
-		this.avatar = blog.getUser().getAvatar();
+		this.username = user.getUsername();
+		this.avatar = user.getAvatar();
 		this.createTime = blog.getCreateTime();
 		this.readSize = blog.getReadSize();
 		this.commentSize = blog.getCommentSize();

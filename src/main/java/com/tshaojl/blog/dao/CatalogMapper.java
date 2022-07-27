@@ -18,5 +18,11 @@ public interface CatalogMapper {
     /**
      * 根据用户查询
      */
-    Catalog findByUserAndName(User user, String name);
+    Catalog findByUserAndName(Long userId, String name);
+
+    void deleteById(Long id);
+
+    Catalog findById(Long id);
+
+    void insert(Catalog catalog);
 }

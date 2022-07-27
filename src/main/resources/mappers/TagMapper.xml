@@ -14,4 +14,16 @@
         where name = #{name}
     </select>
 
+    <insert id="insert" parameterType="com.tshaojl.blog.domain.Tag">
+        insert into
+        tag (name, count)
+        values (#{name}, #{count})
+    </insert>
+
+    <update id="update" parameterType="com.tshaojl.blog.domain.Tag">
+        update tag set
+        count = #{count}
+        where id = #{id}
+    </update>
+
 </mapper>

@@ -6,7 +6,7 @@ spring:
       content-type: text/html
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost/blog?useSSL=false&serverTimezone=UTC&allowMultiQueries=true
+    url: jdbc:mysql://localhost/blog2?useSSL=false&serverTimezone=UTC&allowMultiQueries=true
     username: root
     password: 123456
     schema: classpath:blogs_2.sql

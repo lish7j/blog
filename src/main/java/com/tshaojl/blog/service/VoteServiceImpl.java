@@ -1,5 +1,6 @@
 package com.tshaojl.blog.service;
 
+import com.tshaojl.blog.dao.VoteMapper;
 import com.tshaojl.blog.domain.Vote;
 import com.tshaojl.blog.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +14,21 @@ import javax.transaction.Transactional;
 @Service
 public class VoteServiceImpl implements VoteService {
 
-	private final VoteRepository voteRepository;
+	private final VoteMapper voteMapper;
 
 	@Autowired
-	public VoteServiceImpl(VoteRepository voteRepository) {
-		this.voteRepository = voteRepository;
+	public VoteServiceImpl(VoteMapper voteMapper) {
+		this.voteMapper = voteMapper;
 	}
 
 	@Override
 	@Transactional
 	public void removeVote(Long id) {
-		voteRepository.deleteById(id);
+		voteMapper.deleteById(id);
 	}
 	@Override
 	public Vote getVoteById(Long id) {
-		return voteRepository.findById(id).orElse(null);
+		return voteMapper.findById(id);
 	}
 
 }

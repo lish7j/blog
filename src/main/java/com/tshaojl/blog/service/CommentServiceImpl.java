@@ -1,5 +1,6 @@
 package com.tshaojl.blog.service;
 
+import com.tshaojl.blog.dao.CommentMapper;
 import com.tshaojl.blog.domain.Comment;
 import com.tshaojl.blog.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +14,21 @@ import javax.transaction.Transactional;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-	private final CommentRepository commentRepository;
+	private final CommentMapper commentMapper;
 
 	@Autowired
-	public CommentServiceImpl(CommentRepository commentRepository) {
-		this.commentRepository = commentRepository;
+	public CommentServiceImpl(CommentMapper commentMapper) {
+		this.commentMapper = commentMapper;
 	}
 
 	@Override
 	@Transactional
 	public void removeComment(Long id) {
-		commentRepository.deleteById(id);
+		commentMapper.deleteById(id);
 	}
 	@Override
 	public Comment getCommentById(Long id) {
-		return commentRepository.findById(id).orElse(null);
+		return commentMapper.findById(id);
 	}
 
 }
