@@ -1,4 +1,4 @@
-/*!
+ /*!
  * blogedit.html 页面脚本.
  * 
  * @since: 1.0.0 2017-03-26
@@ -66,7 +66,8 @@ $(function() {
 		    data:JSON.stringify({"id":$('#blogId').val(), 
 		    	"title": $('#title').val(), 
 		    	"summary": $('#summary').val() , 
-		    	"content": $('#md').val(), 
+		    	"content": $('#md').val(),
+				"catalogId": $('#catalogSelect').val(),
 		    	"catalog":{"id":$('#catalogSelect').val()},
 		    	"tags":$('.form-control-tag').val()
 		    	}),

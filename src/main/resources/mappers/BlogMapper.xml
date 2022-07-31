@@ -1,17 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tshaojl.blog.dao.BlogMapperr">
-    <resultMap id="Blog" type="com.tshaojl.blog.domain.Blog">
+<mapper namespace="com.lssj.blog.dao.BlogMapper">
+    <resultMap id="Blog" type="com.lssj.blog.domain.Blog">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="comment_size" jdbcType="INTEGER" property="commentSize"/>
-        <result column=""
+        <result column="read_size" jdbcType="INTEGER" property="readSize"/>
+        <result column="vote_size" jdbcType="INTEGER" property="voteSize"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="summary" jdbcType="VARCHAR" property="summary"/>
+        <result column="html_content" jdbcType="VARCHAR" property="htmlContent"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="catalog_id" property="catalogId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="tags" jdbcType="VARCHAR" property="tags"/>
     </resultMap>
 
 
-    <select id="findById" parameterType="java.lang.Long" resultMap="Authority">
+    <select id="findByCatalogId" resultMap="Blog">
         select
-        id, name
-        from authority
+        id, comment_size, content, create_time,
+        update_time, html_content, read_size, summary,
+        tags, title, vote_size, user_id, catalog_id
+        from blog
+        where catalog_id = #{catalogId} limit #{start}, #{limit};
+    </select>
+
+    <select id="findById" resultMap="Blog">
+        select
+            id, comment_size, content, create_time,
+            update_time, html_content, read_size, summary,
+            tags, title, vote_size, user_id, catalog_id
+        from blog
         where id = #{id}
     </select>
+
+    <select id="findBlogCatalogId" resultType="java.lang.Long">
+        select catalog_id from blog where id = #{id};
+    </select>
+<!--    <select id="findByUserAndTitleLike" resultMap="Blog">-->
+<!--        select id, comment_size, content, create_time,-->
+<!--               update_time, html_content, read_size, summary,-->
+<!--               tags, title, vote_size, user_id, catalog_id-->
+<!--        from blog where user_id = #{user.id} and title LIKE-->
+<!--        #{title} LIMIT #{start}, #{limit}-->
+<!--    </select>-->
+
+<!--    <select id="findByTitleLikeAndUserOrTagsLikeAndUserOrderByCreateTimeDesc" resultMap="Blog">-->
+<!--        select id, comment_size, content, create_time,-->
+<!--               update_time, html_content, read_size, summary,-->
+<!--               tags, title, vote_size, user_id, catalog_id-->
+<!--        from blog where ( user_id = #{user.id} and title LIKE #{title} )-->
+<!--        or (user_id = #{user2.id} and tags LIKE #{tags}) limit #{start}, #{limit}-->
+<!--    </select>-->
+
+    <update id="updateBlog">
+        update blog set comment_size = #{blog.commentSize},
+                    content = #{blog.content},
+                    create_time = #{blog.createTime},
+                    update_time = #{blog.updateTime},
+                    html_content = #{blog.htmlContent},
+                    read_size = #{blog.readSize},
+                    summary = #{blog.summary},
+                    tags = #{blog.tags},
+                    title = #{blog.title},
+                    vote_size = #{blog.voteSize},
+                    catalog_id = #{blog.catalogId}
+            where id = #{blog.id}
+    </update>
+
+    <insert id="insertBlog" useGeneratedKeys="true" keyProperty="id">
+        insert into blog (comment_size, content, create_time,
+                          update_time, html_content, read_size, summary,
+                          tags, title, vote_size, user_id, catalog_id)
+        values (#{blog.commentSize}, #{blog.content}, #{blog.createTime},
+                #{blog.updateTime}, #{blog.htmlContent}, #{blog.readSize},
+                #{blog.summary}, #{blog.tags}, #{blog.title}, #{blog.voteSize},
+                #{blog.userId}, #{blog.catalogId})
+    </insert>
+
+    <delete id="deleteById">
+        delete from blog where id = #{id}
+    </delete>
 </mapper>

@@ -1,3 +1,4 @@
+
 spring:
   thymeleaf:
     mode: HTML
@@ -6,10 +7,12 @@ spring:
       content-type: text/html
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost/blog2?useSSL=false&serverTimezone=UTC&allowMultiQueries=true
+    url: jdbc:mysql://localhost/myblog?useSSL=false&serverTimezone=UTC&allowMultiQueries=true
     username: root
-    password: 123456
-    schema: classpath:blogs_2.sql
+    password: root
+    sql:
+      init:
+        schema-locations: classpath:blogs_2.sql
   #  data:
 #    elasticsearch:
 #      cluster-nodes: localhost:9300
@@ -21,12 +24,16 @@ spring:
     open-in-view: false
   main:
     allow-bean-definition-overriding: true
+  devtools:
+    restart:
+      enabled: true
+
 logging:
   level:
     org.springframework.data.elasticsearch.client.WIRE: TRACE
 mybatis:
-  type-aliases-package: com.lishj.demo.pojo
-  type-handlers-package: com.lishj.demo.dao
+  type-aliases-package: com.lssj.blog.domain
+#  type-handlers-package: com.lishj.demo.dao
   mapper-locations: classpath:mappers/*.xml
   configuration:
     map-underscore-to-camel-case: true

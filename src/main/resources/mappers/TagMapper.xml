@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tshaojl.blog.dao.TagMapper">
-    <resultMap id="Tag" type="com.tshaojl.blog.domain.Tag">
+<mapper namespace="com.lssj.blog.dao.TagMapper">
+    <resultMap id="Tag" type="com.lssj.blog.domain.Tag">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="count" jdbcType="BIGINT" property="count"/>
@@ -14,16 +14,22 @@
         where name = #{name}
     </select>
 
-    <insert id="insert" parameterType="com.tshaojl.blog.domain.Tag">
+    <insert id="insert" parameterType="com.lssj.blog.domain.Tag">
         insert into
         tag (name, count)
         values (#{name}, #{count})
     </insert>
 
-    <update id="update" parameterType="com.tshaojl.blog.domain.Tag">
+    <update id="update" parameterType="com.lssj.blog.domain.Tag">
         update tag set
         count = #{count}
         where id = #{id}
     </update>
+
+    <select id="findAll" resultMap="Tag">
+        select
+            id, name, count
+        from tag
+    </select>
 
 </mapper>
