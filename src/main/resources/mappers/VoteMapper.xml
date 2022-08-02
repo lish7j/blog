@@ -4,22 +4,16 @@
     <resultMap id="Vote" type="com.lssj.blog.domain.Vote">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <association property="user" javaType="com.lssj.blog.domain.User">
-            <id column="id" property="id"/>
-            <result column="avatar" property="avatar"/>
-            <result column="email" property="email"/>
-            <result column="name" property="name"/>
-            <result column="password" property="password"/>
-            <result column="username" property="username"/>
-        </association>
+        <result column="user_id" property="userId"/>
+        <result column="blog_id" property="blogId"/>
     </resultMap>
 
 
     <select id="findById" parameterType="java.lang.Long" resultMap="Vote">
         select
-        v.id, v.create_time, u.id, u.avatar, u.email, u.name, u.password, u.username
-        from vote v, user u
-        where v.id = #{id} and v.id = u.id
+        id, create_time, user_id, blog_id
+        from vote
+        where id = #{id}
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Long">
@@ -30,4 +24,14 @@
         select id, create_time, user_id, blog_id
         from vote where blog_id = #{blogId}
     </select>
+
+    <select id="findByUserIdAndBlogId" resultType="Vote">
+        select id, create_time, user_id, blog_id
+        from vote where user_id = #{userId} and blog_id = #{blogId};
+    </select>
+
+    <insert id="insert">
+        insert into vote (create_time, user_id, blog_id)
+        values (#{vote.createTime}, #{vote.userId}, #{vote.blogId})
+    </insert>
 </mapper>

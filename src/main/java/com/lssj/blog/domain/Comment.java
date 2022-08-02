@@ -25,4 +25,6 @@ public class Comment implements Serializable {
 
 	private Timestamp createTime;
 
+	private Long blogId;
+
 }

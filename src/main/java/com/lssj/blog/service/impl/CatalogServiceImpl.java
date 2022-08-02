@@ -1,8 +1,9 @@
-package com.lssj.blog.service;
+package com.lssj.blog.service.impl;
 
 import com.lssj.blog.dao.CatalogMapper;
 import com.lssj.blog.domain.Catalog;
 import com.lssj.blog.domain.User;
+import com.lssj.blog.service.CatalogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class CatalogServiceImpl implements CatalogService{
+public class CatalogServiceImpl implements CatalogService {
 
 	private final CatalogMapper catalogMapper;
 

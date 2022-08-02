@@ -1,10 +1,12 @@
-package com.lssj.blog.service;
+package com.lssj.blog.service.impl;
 
 import com.lssj.blog.dao.TagMapper;
 import com.lssj.blog.repository.es.EsBlogRepository;
 import com.lssj.blog.domain.Tag;
 import com.lssj.blog.domain.User;
 import com.lssj.blog.domain.es.EsBlog;
+import com.lssj.blog.service.EsBlogService;
+import com.lssj.blog.service.UserService;
 import com.lssj.blog.vo.TagVO;
 
 import org.elasticsearch.action.search.SearchType;
@@ -34,7 +36,7 @@ import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
  * EsBlog 服务.
  */
 @Service("EsBlogService")
-public class EsBlogServiceImpl implements EsBlogService  {
+public class EsBlogServiceImpl implements EsBlogService {
 
 	private final EsBlogRepository esBlogRepository;
 	private final RestHighLevelClient elasticsearchClient;

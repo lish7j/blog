@@ -67,7 +67,7 @@ public class CommentController {
 	 * 发表评论
 	 */
 	@PostMapping
-	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
 	public ResponseEntity<Response> createComment(Long blogId, String commentContent) {
  
 		try {
@@ -85,7 +85,7 @@ public class CommentController {
 	 * 删除评论
 	 */
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
 	public ResponseEntity<Response> delete(@PathVariable("id") Long id, Long blogId) {
 		
 		boolean isOwner = false;

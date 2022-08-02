@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 
 /**
  * Like 实体
+ * @author lssj
  */
 
 @Data
@@ -17,8 +18,9 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class Vote implements Serializable {
 
-	private Long id; // 用户的唯一标识
+	private Long id;
 	private Long userId;
+	private Long blogId;
 	private Timestamp createTime;
 
 }

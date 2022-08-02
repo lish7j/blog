@@ -101,41 +101,7 @@ public class Blog implements Serializable {
 		}
 		this.commentSize = this.comments.size();
 	}
- 
-	/**
-	 * 点赞
-	 */
-	public boolean addVote(Vote vote) {
-		boolean isExist = false;
-		// 判断重复
-		for (Vote vote1 : this.votes) {
-			if (vote1.getUserId().equals(vote.getUserId())) {
-				isExist = true;
-				break;
-			}
-		}
-		
-		if (!isExist) {
-			this.votes.add(vote);
-			this.voteSize = this.votes.size();
-		}
 
-		return isExist;
-	}
-	/**
-	 * 取消点赞
-	 * @param voteId
-	 */
-	public void removeVote(Long voteId) {
-		for (int index=0; index < this.votes.size(); index ++ ) {
-			if (this.votes.get(index).getId().equals(voteId) ) {
-				this.votes.remove(index);
-				break;
-			}
-		}
-		
-		this.voteSize = this.votes.size();
-	}
 	public List<Vote> getVotes() {
 		return votes;
 	}

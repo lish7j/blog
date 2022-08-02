@@ -1,10 +1,10 @@
-package com.lssj.blog.service;
+package com.lssj.blog.service.impl;
 
-import com.lssj.blog.dao.BlogMapper;
-import com.lssj.blog.dao.CatalogMapper;
-import com.lssj.blog.dao.UserMapper;
+import com.lssj.blog.dao.*;
 import com.lssj.blog.domain.*;
 import com.lssj.blog.domain.es.EsBlog;
+import com.lssj.blog.service.BlogService;
+import com.lssj.blog.service.EsBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -26,13 +26,20 @@ public class BlogServiceImpl implements BlogService {
 
 	private final CatalogMapper catalogMapper;
 
+	private final VoteMapper voteMapper;
+
+	private final CommentMapper commentMapper;
+
 	@Autowired
 	public BlogServiceImpl(BlogMapper blogMapper, UserMapper userMapper,
-						   EsBlogService esBlogService, CatalogMapper catalogMapper) {
+						   EsBlogService esBlogService, CatalogMapper catalogMapper,
+						   VoteMapper voteMapper, CommentMapper commentMapper) {
 		this.blogMapper = blogMapper;
 		this.userMapper = userMapper;
 		this.esBlogService = esBlogService;
 		this.catalogMapper = catalogMapper;
+		this.voteMapper = voteMapper;
+		this.commentMapper = commentMapper;
 	}
 
 	@Transactional
@@ -109,14 +116,15 @@ public class BlogServiceImpl implements BlogService {
 		Blog originalBlog = blogMapper.findById(blogId);
 		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
 		Comment comment = new Comment();
+		comment.setBlogId(blogId);
+		comment.setCreateTime(new Timestamp(System.currentTimeMillis()));
 		comment.setContent(commentContent);
 		comment.setUserId(user.getId());
-		Timestamp nowTimestamp = new Timestamp(System.currentTimeMillis());
-		comment.setCreateTime(nowTimestamp);
 		if (originalBlog != null) {
-			originalBlog.addComment(comment);
+			originalBlog.setCommentSize(originalBlog.getCommentSize() + 1);
 		}
 		blogMapper.updateBlog(originalBlog);
+		commentMapper.insert(comment);
 	}
 
 	@Override
@@ -124,26 +132,27 @@ public class BlogServiceImpl implements BlogService {
 	public void removeComment(Long blogId, Long commentId) {
 		Blog originalBlog = blogMapper.findById(blogId);
 		if (originalBlog != null) {
-			originalBlog.removeComment(commentId);
+			originalBlog.setCommentSize(originalBlog.getCommentSize() - 1);
 		}
 		blogMapper.updateBlog(originalBlog);
+		commentMapper.deleteById(commentId);
 	}
 
 	@Override
-	@Transactional
+	@Transactional()
 	public void createVote(Long blogId) {
 		Blog originalBlog = blogMapper.findById(blogId);
 		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
-		Vote vote = new Vote();
-		vote.setUserId(user.getId());
-		vote.setCreateTime(new Timestamp(System.currentTimeMillis()));
-		boolean isExist = false;
-		if (originalBlog != null) {
-			isExist = originalBlog.addVote(vote);
-		}
-		if (isExist) {
+		Vote vote = voteMapper.findByUserIdAndBlogId(user.getId(), blogId);
+		if (vote != null) {
 			throw new IllegalArgumentException("该用户已经点过赞了");
 		}
+		vote = new Vote();
+		vote.setCreateTime(new Timestamp(System.currentTimeMillis()));
+		vote.setUserId(user.getId());
+		vote.setBlogId(blogId);
+		originalBlog.setVoteSize(originalBlog.getVoteSize() + 1);
+		voteMapper.insert(vote);
 		blogMapper.updateBlog(originalBlog);
 	}
 
@@ -151,8 +160,8 @@ public class BlogServiceImpl implements BlogService {
 	@Transactional
 	public void removeVote(Long blogId, Long voteId) {
 		Blog originalBlog = blogMapper.findById(blogId);
-		if (originalBlog != null) {
-			originalBlog.removeVote(voteId);
+		if (originalBlog != null && originalBlog.getVoteSize() > 0) {
+			originalBlog.setVoteSize(originalBlog.getVoteSize() - 1);
 		}
 		blogMapper.updateBlog(originalBlog);
 	}

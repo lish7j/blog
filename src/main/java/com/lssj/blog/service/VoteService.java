@@ -18,4 +18,8 @@ public interface VoteService {
 	void removeVote(Long id);
 
 	List<Vote> getVoteByBlogId(Long blogId);
+
+	Vote getVoteByUserIdAndBlogId(Long userId, Long blogId);
+
+	void insert(Vote vote);
 }

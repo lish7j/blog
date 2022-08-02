@@ -7,12 +7,13 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="vote_size" jdbcType="INTEGER" property="voteSize"/>
         <result column="user_id" property="userId"/>
+        <result column="blog_id" property="blogId"/>
     </resultMap>
 
 
     <select id="findById" parameterType="java.lang.Long" resultMap="Comment">
         select
-        id, content, create_time, user_id
+        id, content, create_time, user_id, blog_id
         from comment
         where id = #{id}
     </select>
@@ -22,6 +23,17 @@
         where id = #{id}
     </delete>
 
+    <select id="findByBlogId" resultMap="Comment">
+        select
+        id, content, create_time, user_id, blog_id
+        from comment
+        where blog_id = #{blogId}
+    </select>
+
+    <insert id="insert">
+        insert into comment(content, create_time, user_id, blog_id)
+        VALUES (#{comment.content}, #{comment.createTime}, #{comment.userId}, #{comment.blogId})
+    </insert>
 
 
 

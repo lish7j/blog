@@ -1,7 +1,8 @@
-package com.lssj.blog.service;
+package com.lssj.blog.service.impl;
 
 import com.lssj.blog.dao.CommentMapper;
 import com.lssj.blog.domain.Comment;
+import com.lssj.blog.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

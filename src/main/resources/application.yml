@@ -12,7 +12,7 @@ spring:
     password: root
     sql:
       init:
-        schema-locations: classpath:blogs_2.sql
+        schema-locations: classpath:blogs_lssj.sql
   #  data:
 #    elasticsearch:
 #      cluster-nodes: localhost:9300

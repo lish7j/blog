@@ -82,7 +82,8 @@ CREATE TABLE `comment` (
                            `id` bigint(20) NOT NULL AUTO_INCREMENT,
                            `content` varchar(500) NOT NULL,
                            `create_time` datetime NOT NULL,
-                           `user_id` bigint(20) DEFAULT NULL,
+                           `user_id` bigint(20) NOT NULL,
+                           `blog_id` bigint(20) NOT NULL,
                            PRIMARY KEY (`id`),
                            KEY `user_id_index` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -41,7 +41,7 @@ public class VoteController {
 	 * 发表点赞
 	 */
 	@PostMapping
-	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
 	public ResponseEntity<Response> createVote(Long blogId) {
  
 		try {
@@ -59,7 +59,7 @@ public class VoteController {
 	 * 删除点赞
 	 */
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
 	public ResponseEntity<Response> delete(@PathVariable("id") Long id, Long blogId) {
 		
 		boolean isOwner = false;
@@ -67,7 +67,7 @@ public class VoteController {
 		User user = userService.getUserById(userId);
 		
 		// 判断操作用户是否是点赞的所有者
-		if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+		if (SecurityContextHolder.getContext().getAuthentication() != null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
 				 &&  !"anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString())) {
 			User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
 			if (principal !=null && user.getUsername().equals(principal.getUsername())) {

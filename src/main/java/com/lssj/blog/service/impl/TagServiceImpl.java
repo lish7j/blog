@@ -1,8 +1,9 @@
-package com.lssj.blog.service;
+package com.lssj.blog.service.impl;
 
 
 import com.lssj.blog.dao.TagMapper;
 import com.lssj.blog.domain.Tag;
+import com.lssj.blog.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

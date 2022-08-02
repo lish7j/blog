@@ -1,7 +1,8 @@
-package com.lssj.blog.service;
+package com.lssj.blog.service.impl;
 
 import com.lssj.blog.dao.UserMapper;
 import com.lssj.blog.domain.User;
+import com.lssj.blog.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 @Service("UserService")
 @Slf4j
-public class UserServiceImpl  implements UserService , UserDetailsService {
+public class UserServiceImpl  implements UserService, UserDetailsService {
 
 	private final UserMapper userMapper;
 
