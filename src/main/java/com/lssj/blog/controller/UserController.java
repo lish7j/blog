@@ -4,12 +4,8 @@ import com.lssj.blog.domain.Authority;
 import com.lssj.blog.domain.User;
 import com.lssj.blog.util.ConstraintViolationExceptionHandler;
 import com.lssj.blog.vo.Response;
-import com.lssj.blog.service.AuthorityService;
 import com.lssj.blog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,12 +27,11 @@ import java.util.List;
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
 public class UserController {
 	private final UserService userService;
-	private final AuthorityService  authorityService;
+
 
 	@Autowired
-	public UserController(UserService userService, AuthorityService authorityService) {
+	public UserController(UserService userService) {
 		this.userService = userService;
-		this.authorityService = authorityService;
 	}
 
 	/**
@@ -73,8 +68,6 @@ public class UserController {
 	@PostMapping
 	public ResponseEntity<Response> create(User user, Long authorityId) {
 		List<Authority> authorities = new ArrayList<>();
-		authorities.add(authorityService.getAuthorityById(authorityId));
-		user.setAuthorities(authorities);
 		
 		if(user.getId() == null) {
 			user.setEncodePassword(user.getPassword()); // 加密密码

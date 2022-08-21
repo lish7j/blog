@@ -2,11 +2,9 @@ package com.lssj.blog.controller;
 
 import com.lssj.blog.domain.Authority;
 import com.lssj.blog.domain.User;
-import com.lssj.blog.service.AuthorityService;
 import com.lssj.blog.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +21,12 @@ import java.util.List;
 public class MainController {
 	private static final Long ROLE_USER_AUTHORITY_ID = 2L;
 	private final UserService userService;
-	private final AuthorityService  authorityService;
+
 
 	@Autowired
-	public MainController(UserService userService, AuthorityService authorityService) {
+	public MainController(UserService userService) {
 		this.userService = userService;
-		this.authorityService = authorityService;
+
 	}
 
 	@GetMapping("/")
@@ -66,8 +64,7 @@ public class MainController {
 	@PostMapping("/register")
 	public String registerUser(User user) {
 		List<Authority> authorities = new ArrayList<>();
-		authorities.add(authorityService.getAuthorityById(ROLE_USER_AUTHORITY_ID));
-		user.setAuthorities(authorities);
+
 
 		user.setEncodePassword(user.getPassword()); // 加密密码
 		userService.saveUser(user);

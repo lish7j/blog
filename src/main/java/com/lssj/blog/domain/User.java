@@ -17,7 +17,7 @@ import java.util.List;
  * User 实体
  */
 @Data
-public class User implements UserDetails, Serializable {
+public class User implements Serializable {
 
 	// 用户的唯一标识
 	private Long id;
@@ -37,9 +37,6 @@ public class User implements UserDetails, Serializable {
 	// 头像图片地址
 	private String avatar;
 
-	// 用户的角色
-	private List<Authority> authorities;
-
 	public User() { // JPA 的规范要求无参构造函数；设为 protected 防止直接使用
 	}
 
@@ -50,56 +47,13 @@ public class User implements UserDetails, Serializable {
 		this.password = password;
 	}
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		//  需将 List<Authority> 转成 List<SimpleGrantedAuthority>，否则前端拿不到角色列表名称
-		List<SimpleGrantedAuthority> simpleAuthorities = new ArrayList<>();
-		if (this.authorities == null || this.authorities.size() == 0)
-			return simpleAuthorities;
-		for(GrantedAuthority authority : this.authorities){
-			simpleAuthorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
-		}
-		return simpleAuthorities;
-	}
-
-
-	@Override
-	public String getUsername() {
-		return username;
-	}
-
-
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
 
 	public void setEncodePassword(String password) {
-		PasswordEncoder  encoder = new BCryptPasswordEncoder();
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		this.password = encoder.encode(password);
 	}
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
 
 	@Override
 	public String toString() {

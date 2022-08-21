@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Service("UserService")
 @Slf4j
-public class UserServiceImpl  implements UserService, UserDetailsService {
+public class UserServiceImpl  implements UserService {
 
 	private final UserMapper userMapper;
 
@@ -69,7 +69,7 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
 		return userMapper.findByNameLike(name, start, limit);
 	}
 
-	public UserDetails loadUserByUsername(String username){
+	public User loadUserByUsername(String username){
 		return userMapper.findByUsername(username);
 	}
 
