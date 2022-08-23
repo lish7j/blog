@@ -49,4 +49,6 @@ public interface BlogMapper {
 
     void deleteById(Long id);
 
+    List<Blog> findAll();
+
 }

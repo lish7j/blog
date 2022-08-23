@@ -83,4 +83,8 @@
     <delete id="deleteById">
         delete from blog where id = #{id}
     </delete>
+
+    <select id="findAll" resultMap="Blog">
+        select * from blog;
+    </select>
 </mapper>

@@ -2,11 +2,8 @@ package com.lssj.blog.service.impl;
 
 import com.lssj.blog.dao.*;
 import com.lssj.blog.domain.*;
-import com.lssj.blog.domain.es.EsBlog;
 import com.lssj.blog.service.BlogService;
-import com.lssj.blog.service.EsBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,7 +19,6 @@ public class BlogServiceImpl implements BlogService {
 	private final BlogMapper blogMapper;
 
 	private final UserMapper userMapper;
-	private final EsBlogService esBlogService;
 
 	private final CatalogMapper catalogMapper;
 
@@ -32,11 +28,10 @@ public class BlogServiceImpl implements BlogService {
 
 	@Autowired
 	public BlogServiceImpl(BlogMapper blogMapper, UserMapper userMapper,
-						   EsBlogService esBlogService, CatalogMapper catalogMapper,
+						   CatalogMapper catalogMapper,
 						   VoteMapper voteMapper, CommentMapper commentMapper) {
 		this.blogMapper = blogMapper;
 		this.userMapper = userMapper;
-		this.esBlogService = esBlogService;
 		this.catalogMapper = catalogMapper;
 		this.voteMapper = voteMapper;
 		this.commentMapper = commentMapper;
@@ -46,7 +41,7 @@ public class BlogServiceImpl implements BlogService {
 	@Override
 	public void saveBlog(Blog blog) {
 		boolean isNew = (blog.getId() == null);
-		EsBlog esBlog;
+
 		if (blogMapper.findById(blog.getId()) == null) {
 			blogMapper.insertBlog(blog);
 		} else {
@@ -54,22 +49,13 @@ public class BlogServiceImpl implements BlogService {
 		}
 		Blog returnBlog = blogMapper.findById(blog.getId());
 		User user = userMapper.findById(blog.getUserId());
-		if (isNew) {
-			esBlog = new EsBlog(blog, user);
-		} else {
-			esBlog = esBlogService.getEsBlogByBlogId(blog.getId());
-			esBlog.update(returnBlog, user);
-		}
-		
-		esBlogService.updateEsBlog(esBlog);
+
 	}
 
 	@Transactional
 	@Override
 	public void removeBlog(Long id) {
 		blogMapper.deleteById(id);
-		EsBlog esblog = esBlogService.getEsBlogByBlogId(id);
-		esBlogService.removeEsBlog(esblog.getId());
 	}
 
 	@Override
@@ -114,7 +100,7 @@ public class BlogServiceImpl implements BlogService {
 	@Transactional
 	public void createComment(Long blogId, String commentContent) {
 		Blog originalBlog = blogMapper.findById(blogId);
-		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
+		User user = userMapper.findById(originalBlog.getUserId());
 		Comment comment = new Comment();
 		comment.setBlogId(blogId);
 		comment.setCreateTime(new Timestamp(System.currentTimeMillis()));
@@ -142,7 +128,7 @@ public class BlogServiceImpl implements BlogService {
 	@Transactional()
 	public void createVote(Long blogId) {
 		Blog originalBlog = blogMapper.findById(blogId);
-		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
+		User user = userMapper.findById(originalBlog.getUserId());
 		Vote vote = voteMapper.findByUserIdAndBlogId(user.getId(), blogId);
 		if (vote != null) {
 			throw new IllegalArgumentException("该用户已经点过赞了");
@@ -164,5 +150,10 @@ public class BlogServiceImpl implements BlogService {
 			originalBlog.setVoteSize(originalBlog.getVoteSize() - 1);
 		}
 		blogMapper.updateBlog(originalBlog);
+	}
+
+	@Override
+	public List<Blog> findAll() {
+		return blogMapper.findAll();
 	}
 }

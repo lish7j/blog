@@ -8,13 +8,8 @@ import com.lssj.blog.util.ConstraintViolationExceptionHandler;
 import com.lssj.blog.vo.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
 
@@ -41,7 +36,6 @@ public class VoteController {
 	 * 发表点赞
 	 */
 	@PostMapping
-	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
 	public ResponseEntity<Response> createVote(Long blogId) {
  
 		try {
@@ -59,22 +53,18 @@ public class VoteController {
 	 * 删除点赞
 	 */
 	@DeleteMapping("/{id}")
-	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
-	public ResponseEntity<Response> delete(@PathVariable("id") Long id, Long blogId) {
+	public ResponseEntity<Response> delete(@PathVariable("id") Long id,
+										   @RequestParam(value = "username") String username,
+										   Long blogId) {
 		
 		boolean isOwner = false;
 		Long userId = voteService.getVoteById(id).getUserId();
 		User user = userService.getUserById(userId);
 		
 		// 判断操作用户是否是点赞的所有者
-		if (SecurityContextHolder.getContext().getAuthentication() != null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
-				 &&  !"anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString())) {
-			User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
-			if (principal !=null && user.getUsername().equals(principal.getUsername())) {
-				isOwner = true;
-			} 
-		} 
-		
+		if (user.getUsername().equals(username)) {
+			isOwner = true;
+		}
 		if (!isOwner) {
 			return ResponseEntity.ok().body(new Response(false, "没有操作权限"));
 		}

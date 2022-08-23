@@ -47,6 +47,7 @@ CREATE TABLE `blog` (
                         `vote_size` int(11) DEFAULT NULL,
                         `catalog_id` bigint(20) DEFAULT NULL,
                         `user_id` bigint(20) DEFAULT NULL,
+                        `avatar` varchar(50) DEFAULT NULL,
                         PRIMARY KEY (`id`),
                         KEY `catalog_id_index` (`catalog_id`),
                         KEY `user_id_index` (`user_id`)
@@ -110,8 +111,8 @@ CREATE TABLE `user` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', null, 'b2stry@163.com', '夏浅安', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', 'admin');
-INSERT INTO `user` VALUES ('2', null, 'awesome@shallowan.cn', 'Shallow An', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', 'shallowan');
+INSERT INTO `user` VALUES ('1', null, 'b2stry@163.com', '夏浅安', 'admin', 'admin');
+INSERT INTO `user` VALUES ('2', null, 'awesome@shallowan.cn', 'Shallow An', 'admin', 'shallowan');
 
 
 -- ----------------------------

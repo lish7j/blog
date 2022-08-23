@@ -1,20 +1,15 @@
 package com.lssj.blog.controller;
 
 import com.lssj.blog.domain.*;
+import com.lssj.blog.security.SessionMapUtil;
 import com.lssj.blog.service.*;
 import com.lssj.blog.util.ConstraintViolationExceptionHandler;
 import com.lssj.blog.vo.Response;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +28,6 @@ import java.util.Map;
 @RequestMapping("/u")
 @Slf4j
 public class UserspaceController {
-	private final UserDetailsService userDetailsService;
 	private final UserService userService;
 	private final BlogService blogService;
 	private final CatalogService catalogService;
@@ -42,9 +36,8 @@ public class UserspaceController {
 	private final VoteService voteService;
 
 	@Autowired
-	public UserspaceController(@Qualifier("UserService") UserDetailsService userDetailsService, UserService userService,
+	public UserspaceController(UserService userService,
 							   BlogService blogService, CatalogService catalogService, TagService tagService, VoteService voteService) {
-		this.userDetailsService = userDetailsService;
 		this.userService = userService;
 		this.blogService = blogService;
 		this.catalogService = catalogService;
@@ -55,16 +48,19 @@ public class UserspaceController {
 
 	@GetMapping("/{username}")
 	public String userSpace(@PathVariable("username") String username, Model model) {
-		User user = (User)userDetailsService.loadUserByUsername(username);
+		User user = userService.findByUsername(username);
 		model.addAttribute("user", user);
 		return "redirect:/u/" + username + "/blogs";
 	}
  
 	@GetMapping("/{username}/profile")
-	@PreAuthorize("authentication.name.equals(#username)") 
 	public ModelAndView profile(@PathVariable("username") String username, Model model) {
-		User  user = (User)userDetailsService.loadUserByUsername(username);
+		User user = userService.findByUsername(username);
+		if (!SessionMapUtil.hasLogin(user.getId().toString())) {
+			return new ModelAndView("/login");
+		}
 		model.addAttribute("user", user);
+		model.addAttribute("token", "login_token");
 		return new ModelAndView("/userspace/profile", "userModel", model);
 	}
  
@@ -72,22 +68,11 @@ public class UserspaceController {
 	 * 保存个人设置
 	 */
 	@PostMapping("/{username}/profile")
-	@PreAuthorize("authentication.name.equals(#username)") 
 	public String saveProfile(@PathVariable("username") String username,User user) {
 		User originalUser = userService.getUserById(user.getId());
 		originalUser.setEmail(user.getEmail());
 		originalUser.setName(user.getName());
-		
-		// 判断密码是否做了变更
-		String rawPassword = originalUser.getPassword();
-		PasswordEncoder  encoder = new BCryptPasswordEncoder();
-		String encodePasswd = encoder.encode(user.getPassword());
-		boolean isMatch = encoder.matches(rawPassword, encodePasswd);
-		if (!isMatch) {
-			originalUser.setEncodePassword(user.getPassword());
-		}
-		
-		userService.saveUser(originalUser);
+		userService.updateUser(originalUser);
 		return "redirect:/u/" + username + "/profile";
 	}
 	
@@ -95,9 +80,8 @@ public class UserspaceController {
 	 * 获取编辑头像的界面
 	 */
 	@GetMapping("/{username}/avatar")
-	@PreAuthorize("authentication.name.equals(#username)") 
 	public ModelAndView avatar(@PathVariable("username") String username, Model model) {
-		User  user = (User)userDetailsService.loadUserByUsername(username);
+		User  user = userService.findByUsername(username);
 		model.addAttribute("user", user);
 		return new ModelAndView("/userspace/avatar", "userModel", model);
 	}
@@ -107,13 +91,12 @@ public class UserspaceController {
 	 * 保存头像
 	 */
 	@PostMapping("/{username}/avatar")
-	@PreAuthorize("authentication.name.equals(#username)") 
 	public ResponseEntity<Response> saveAvatar(@PathVariable("username") String username, @RequestBody User user) {
 		String avatarUrl = user.getAvatar();
 		
 		User originalUser = userService.getUserById(user.getId());
 		originalUser.setAvatar(avatarUrl);
-		userService.saveUser(originalUser);
+		userService.updateUser(originalUser);
 		
 		return ResponseEntity.ok().body(new Response(true, "处理成功", avatarUrl));
 	}
@@ -129,8 +112,10 @@ public class UserspaceController {
 			@RequestParam(value= "limit",required=false,defaultValue="10") int limit,
 			Model model) {
 		
-		User user = (User)userDetailsService.loadUserByUsername(username);
- 		
+		User user = userService.findByUsername(username);
+ 		if (!SessionMapUtil.hasLogin(user.getId().toString())) {
+			 return "login";
+		}
 		List<Blog> page = null;
 		
 		if (catalogId != null && catalogId > 0) { // 分类查询
@@ -154,6 +139,7 @@ public class UserspaceController {
 		model.addAttribute("keyword", keyword);
 		model.addAttribute("page", page);
 		model.addAttribute("blogList", list);
+		model.addAttribute("token", "login_token");
 		return (async ?"/userspace/u :: #mainContainerRepleace":"/userspace/u");
 	}
 	
@@ -161,8 +147,9 @@ public class UserspaceController {
 	 * 获取博客展示界面
 	 */
 	@GetMapping("/{username}/blogs/{id}")
-	public String getBlogById(@PathVariable("username") String username,@PathVariable("id") Long id, Model model) {
-		User principal = null;
+	public String getBlogById(@PathVariable("username") String username,@PathVariable("id") Long id,
+							 Model model) {
+		User principal = userService.findByUsername(username);
 		Blog blog = blogService.getBlogById(id);
 		
 		// 每次读取，简单的可以认为阅读量增加1次
@@ -170,12 +157,8 @@ public class UserspaceController {
 
 		// 判断操作用户是否是博客的所有者
 		boolean isBlogOwner = false;
-		if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
-				 &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
-			principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
-			if (principal !=null && username.equals(principal.getUsername())) {
-				isBlogOwner = true;
-			} 
+		if (blog.getUserId() == principal.getId()) {
+			isBlogOwner = true;
 		}
 		
 		// 判断操作用户的点赞情况
@@ -196,7 +179,7 @@ public class UserspaceController {
 		model.addAttribute("blogModel",blog);
 		model.addAttribute("user", blogUser);
 		model.addAttribute("currentVote",currentVote);
-		
+		model.addAttribute("token", "login_token");
 		return "/userspace/blog";
 	}
 	
@@ -205,7 +188,6 @@ public class UserspaceController {
 	 * 删除博客
 	 */
 	@DeleteMapping("/{username}/blogs/{id}")
-	@PreAuthorize("authentication.name.equals(#username)") 
 	public ResponseEntity<Response> deleteBlog(@PathVariable("username") String username,@PathVariable("id") Long id) {
 		
 		try {
@@ -223,9 +205,10 @@ public class UserspaceController {
 	 */
 	@GetMapping("/{username}/blogs/edit")
 	public ModelAndView createBlog(@PathVariable("username") String username, Model model) {
-		User user = (User)userDetailsService.loadUserByUsername(username);
+		User user = userService.findByUsername(username);
 		List<Catalog> catalogs = catalogService.listCatalogs(user);
-		
+		model.addAttribute("user", user);
+		model.addAttribute("token", "login_token");
 		model.addAttribute("blog", new Blog(null, null, null));
 		model.addAttribute("catalogs", catalogs);
 		return new ModelAndView("/userspace/blogedit", "blogModel", model);
@@ -237,10 +220,11 @@ public class UserspaceController {
 	@GetMapping("/{username}/blogs/edit/{id}")
 	public ModelAndView editBlog(@PathVariable("username") String username, @PathVariable("id") Long id, Model model) {
 		// 获取用户分类列表
-		User user = (User)userDetailsService.loadUserByUsername(username);
+		User user = userService.findByUsername(username);
 		List<Catalog> catalogs = catalogService.listCatalogs(user);
 		
 		model.addAttribute("blog", blogService.getBlogById(id));
+		model.addAttribute("user", user);
 		model.addAttribute("catalogs", catalogs);
 		return new ModelAndView("/userspace/blogedit", "blogModel", model);
 	}
@@ -249,7 +233,6 @@ public class UserspaceController {
 	 * 保存博客
 	 */
 	@PostMapping("/{username}/blogs/edit")
-	@PreAuthorize("authentication.name.equals(#username)") 
 	public ResponseEntity<Response> saveBlog(@PathVariable("username") String username, @RequestBody Blog blog) {
 		// 对 Catalog 进行空处理
 		if (blog.getCatalog() == null || blog.getCatalog().getId() == null) {
@@ -265,8 +248,10 @@ public class UserspaceController {
 			// 判断是修改还是新增
 
 			log.info("编辑博客时 " + blog.getTags() + " id " + (blog.getId() == null));
+			User user = userService.findByUsername(username);
 			if (blog.getId()!=null) {
 				Blog orignalBlog = blogService.getBlogById(blog.getId());
+				blog.setAvatar(user.getAvatar());
 				String[] tags = blog.getTags().split(",");
 				String[] originTags = orignalBlog.getTags().split(",");
 				orignalBlog.setTitle(blog.getTitle());
@@ -293,7 +278,6 @@ public class UserspaceController {
 					tagService.saveOrUpdate(tag);
 				}
 	        } else {
-	    		User user = (User)userDetailsService.loadUserByUsername(username);
 	    		blog.setUserId(user.getId());
 				blogService.saveBlog(blog);
 				String[] tags = blog.getTags().split(",");

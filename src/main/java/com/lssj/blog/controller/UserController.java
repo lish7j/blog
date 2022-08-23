@@ -7,9 +7,6 @@ import com.lssj.blog.vo.Response;
 import com.lssj.blog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,7 +21,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/users")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
 public class UserController {
 	private final UserService userService;
 
@@ -70,19 +66,11 @@ public class UserController {
 		List<Authority> authorities = new ArrayList<>();
 		
 		if(user.getId() == null) {
-			user.setEncodePassword(user.getPassword()); // 加密密码
+
 		}else {
 			// 判断密码是否做了变更
 			User originalUser = userService.getUserById(user.getId());
 			String rawPassword = originalUser.getPassword();
-			PasswordEncoder  encoder = new BCryptPasswordEncoder();
-			String encodePasswd = encoder.encode(user.getPassword());
-			boolean isMatch = encoder.matches(rawPassword, encodePasswd);
-			if (!isMatch) {
-				user.setEncodePassword(user.getPassword());
-			}else {
-				user.setPassword(user.getPassword());
-			}
 		}
 		
 		try {

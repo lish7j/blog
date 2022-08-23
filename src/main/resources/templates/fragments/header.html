@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
     <!-- CSRF -->
-	<meta name="_csrf" th:content="${_csrf.token}"/>
-	<!-- default header name is X-CSRF-TOKEN -->
-	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<!--	<meta name="_csrf" th:content="${_csrf.token}"/>-->
+<!--	&lt;!&ndash; default header name is X-CSRF-TOKEN &ndash;&gt;-->
+<!--	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
 	
     <!-- Tether core CSS -->
     <link href="../../css/tether.min.css" th:href="@{/css/tether.min.css}" rel="stylesheet">
@@ -71,17 +71,17 @@
                     </a>
                 </form>
             </ul>
-
-            <div sec:authorize="isAuthenticated()"  class="row" >
+            <!-- 如果用户登陆了，那么后台会设置token值为login_token，通过model来传值 -->
+            <div th:if="${token} == 'login_token'" class="row">
 				<div class="dropdown">
-					<a class=" dropdown-toggle" href="/u/waylau" th:href="@{'/u/' + ${#authentication.name}}" data-toggle="dropdown"><span sec:authentication="name"></span></a>
+					<a class=" dropdown-toggle" href="/u/waylau" th:href="'/u/'+${user.username}" data-toggle="dropdown"><span ></span></a>
 					<div class="dropdown-menu" >
-						<a class=" dropdown-item" href="/u/waylau" th:href="@{'/u/' + ${#authentication.name}}">个人主页</a> 
-						<a class="dropdown-item" href="/u/waylau/profile" th:href="@{'/u/' + ${#authentication.name}} + '/profile'" >个人设置</a>
+						<a class=" dropdown-item" href="/u/waylau" th:href="'/u/'+${user.username}">个人主页</a>
+						<a class="dropdown-item" href="/u/waylau/profile" th:href="'/u/'+${user.username}+'/profile'">个人设置</a>
 					</div>
 				</div>
  				<div>
- 					<a href="/u/waylau/blogs/edit" th:href="'/u/' + ${#authentication.name} + '/blogs/edit'" class="btn btn-outline-success my-2 my-sm-0">写博客</a>
+ 					<a href="/u/waylau/blogs/edit"  th:href="'/u/'+${user.username}+'/blogs/edit'" class="btn btn-outline-success my-2 my-sm-0">写博客</a>
  				</div>
                 
 				<form action="/logout" th:action="@{/logout}" method="post">
@@ -91,7 +91,7 @@
  
                 
 
-            <div sec:authorize="isAnonymous()">
+            <div th:if="${token} != 'login_token'">
                 <a href="/login" class="btn btn-outline-success my-2 my-sm-0" type="submit">登录</a>
                 <a href="/register" class="btn btn-outline-success my-2 my-sm-0" type="submit">注册</a>
             </div>

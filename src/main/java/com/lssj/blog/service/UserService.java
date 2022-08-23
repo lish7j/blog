@@ -48,4 +48,6 @@ public interface UserService {
 	 * 更具名称列表查询
 	 */
 	List<User> listUsersByUsernames(Collection<String> usernames);
+
+	User findByUsername(String username);
 }

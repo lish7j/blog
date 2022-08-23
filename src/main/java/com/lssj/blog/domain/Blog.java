@@ -36,6 +36,10 @@ public class Blog implements Serializable {
  	
 	// 用户id
 	private Long userId;
+
+	private String username;
+
+	private String avatar;
 	
 	// 由数据库自动创建时间
 	private Timestamp createTime;

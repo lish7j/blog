@@ -5,8 +5,6 @@ import com.lssj.blog.domain.User;
 import com.lssj.blog.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -69,9 +67,8 @@ public class UserServiceImpl  implements UserService {
 		return userMapper.findByNameLike(name, start, limit);
 	}
 
-	public User loadUserByUsername(String username){
-		return userMapper.findByUsername(username);
-	}
+
+
 
 	@Override
 	public List<User> listUsersByUsernames(Collection<String> usernames) {
@@ -81,4 +78,8 @@ public class UserServiceImpl  implements UserService {
 		return userMapper.findByUsernameIn(usernames);
 	}
 
+	@Override
+	public User findByUsername(String username) {
+		return userMapper.findByUsername(username);
+	}
 }

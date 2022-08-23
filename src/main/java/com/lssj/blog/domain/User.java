@@ -2,16 +2,10 @@ package com.lssj.blog.domain;
 
 import lombok.Data;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+
 
 /**
  * User 实体
@@ -48,10 +42,6 @@ public class User implements Serializable {
 	}
 
 
-	public void setEncodePassword(String password) {
-		PasswordEncoder encoder = new BCryptPasswordEncoder();
-		this.password = encoder.encode(password);
-	}
 
 
 

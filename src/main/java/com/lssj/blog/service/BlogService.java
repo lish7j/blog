@@ -65,4 +65,6 @@ public interface BlogService {
 	 * 取消点赞
 	 */
 	void removeVote(Long blogId, Long voteId);
+
+	List<Blog> findAll();
 }

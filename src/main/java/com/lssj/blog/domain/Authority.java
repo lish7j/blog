@@ -1,6 +1,5 @@
 package com.lssj.blog.domain;
 
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 
@@ -8,7 +7,7 @@ import javax.persistence.*;
  * 权限.
  */
 @Entity
-public class Authority implements GrantedAuthority {
+public class Authority {
 	@Id // 主键
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 自增长策略
 	private Long id; // 用户的唯一标识
@@ -24,8 +23,8 @@ public class Authority implements GrantedAuthority {
 		this.id = id;
 	}
 
-	@Override
-	public String getAuthority() {
+
+	public String getName() {
 		return name;
 	}
 

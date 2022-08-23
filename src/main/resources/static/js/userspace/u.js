@@ -124,17 +124,14 @@ $(function() {
 	// 提交分类
 	$("#submitEditCatalog").click(function() {
 		// 获取 CSRF Token 
-		var csrfToken = $("meta[name='_csrf']").attr("content");
-		var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+		// var csrfToken = $("meta[name='_csrf']").attr("content");
+		// var csrfHeader = $("meta[name='_csrf_header']").attr("content");
  		
 		$.ajax({ 
 			 url: '/catalogs', 
 			 type: 'POST', 
 			 contentType: "application/json; charset=utf-8",
 			 data:JSON.stringify({"username":username, "catalog":{"id":$('#catalogId').val(), "name":$('#catalogName').val()}}),
-			 beforeSend: function(request) {
-                 request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token 
-             },
 			 success: function(data){
 				 if (data.success) {
 					 toastr.info(data.message);
@@ -153,15 +150,15 @@ $(function() {
 	// 删除分类
 	$(".blog-content-container").on("click",".blog-delete-catalog", function () { 
 		// 获取 CSRF Token 
-		var csrfToken = $("meta[name='_csrf']").attr("content");
-		var csrfHeader = $("meta[name='_csrf_header']").attr("content");
- 		
+		// var csrfToken = $("meta[name='_csrf']").attr("content");
+		// var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
 		$.ajax({ 
 			 url: '/catalogs/'+$(this).attr('catalogid')+'?username='+username, 
 			 type: 'DELETE', 
-			 beforeSend: function(request) {
-                 request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token 
-             },
+			 // beforeSend: function(request) {
+             //     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+             // },
 			 success: function(data){
 				 if (data.success) {
 					 toastr.info(data.message);

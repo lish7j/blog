@@ -3,14 +3,12 @@ package com.lssj.blog.controller;
 import com.lssj.blog.domain.Catalog;
 import com.lssj.blog.domain.User;
 import com.lssj.blog.service.CatalogService;
+import com.lssj.blog.service.UserService;
 import com.lssj.blog.util.ConstraintViolationExceptionHandler;
 import com.lssj.blog.vo.CatalogVO;
 import com.lssj.blog.vo.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +25,13 @@ import java.util.List;
 public class CatalogController {
 	
 	private final CatalogService catalogService;
-	private final UserDetailsService userDetailsService;
+
+	private final UserService userService;
 
 	@Autowired
-	public CatalogController(CatalogService catalogService,UserDetailsService userDetailsService) {
+	public CatalogController(CatalogService catalogService, UserService userService) {
 		this.catalogService = catalogService;
-		this.userDetailsService = userDetailsService;
+		this.userService = userService;
 	}
 
 	/**
@@ -40,20 +39,11 @@ public class CatalogController {
 	 */
 	@GetMapping
 	public String listComments(@RequestParam(value="username") String username, Model model) {
-		User user = (User)userDetailsService.loadUserByUsername(username);
+		User user = userService.findByUsername(username);
 		List<Catalog> catalogs = catalogService.listCatalogs(user);
 
 		// 判断操作用户是否是分类的所有者
-		boolean isOwner = false;
-		
-		if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
-				 &&  !"anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString())) {
-			User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
-			if (principal !=null && user.getUsername().equals(principal.getUsername())) {
-				isOwner = true;
-			} 
-		} 
-		
+		boolean isOwner = true;
 		model.addAttribute("isCatalogsOwner", isOwner);
 		model.addAttribute("catalogs", catalogs);
 		return "/userspace/u :: #catalogRepleace";
@@ -62,13 +52,12 @@ public class CatalogController {
 	 * 发表分类
 	 */
 	@PostMapping
-	@PreAuthorize("authentication.name.equals(#catalogVO.username)")// 指定用户才能操作方法
 	public ResponseEntity<Response> create(@RequestBody CatalogVO catalogVO) {
 		
 		String username = catalogVO.getUsername();
 		Catalog catalog = catalogVO.getCatalog();
 		
-		User user = (User)userDetailsService.loadUserByUsername(username);
+		User user = userService.findByUsername(username);
 		
 		try {
 			catalog.setUserId(user.getId());
@@ -86,7 +75,6 @@ public class CatalogController {
 	 * 删除分类
 	 */
 	@DeleteMapping("/{id}")
-	@PreAuthorize("authentication.name.equals(#username)")  // 指定用户才能操作方法
 	public ResponseEntity<Response> delete(String username, @PathVariable("id") Long id) {
 		try {
 			catalogService.removeCatalog(id);

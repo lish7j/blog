@@ -8,11 +8,10 @@ import com.lssj.blog.util.ConstraintViolationExceptionHandler;
 import com.lssj.blog.vo.Response;
 import com.lssj.blog.domain.Comment;
 import com.lssj.blog.service.CommentService;
-import lombok.val;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -45,18 +44,14 @@ public class CommentController {
 	 * 获取评论列表
 	 */
 	@GetMapping
-	public String listComments(@RequestParam(value="blogId") Long blogId, Model model) {
+	public String listComments(@RequestParam("username") String username, @RequestParam(value="blogId") Long blogId, Model model) {
 		Blog blog = blogService.getBlogById(blogId);
 		List<Comment> comments = blog.getComments();
-		
+		User user = userService.findByUsername(username);
 		// 判断操作用户是否是评论的所有者
 		String commentOwner = "";
-		if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
-				 &&  !"anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString())) {
-			User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (principal !=null) {
-				commentOwner = principal.getUsername();
-			} 
+		if (user.getId().equals(blog.getUserId())) {
+			commentOwner = username;
 		}
 		
 		model.addAttribute("commentOwner", commentOwner);
@@ -67,7 +62,6 @@ public class CommentController {
 	 * 发表评论
 	 */
 	@PostMapping
-	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
 	public ResponseEntity<Response> createComment(Long blogId, String commentContent) {
  
 		try {
@@ -85,19 +79,15 @@ public class CommentController {
 	 * 删除评论
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Response> delete(@PathVariable("id") Long id, Long blogId) {
+	public ResponseEntity<Response> delete(@RequestParam("username") String username, @PathVariable("id") Long id, Long blogId) {
 		
 		boolean isOwner = false;
 		Long userId = commentService.getCommentById(id).getUserId();
 		User user = userService.getUserById(userId);
 		// 判断操作用户是否是评论的所有者
-		if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
-				 &&  !"anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString())) {
-			User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
-			if (principal !=null && user.getUsername().equals(principal.getUsername())) {
-				isOwner = true;
-			} 
-		} 
+		if (user.getUsername().equals(username)) {
+			isOwner = true;
+		}
 		
 		if (!isOwner) {
 			return ResponseEntity.ok().body(new Response(false, "没有操作权限"));

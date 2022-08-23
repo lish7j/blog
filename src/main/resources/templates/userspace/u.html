@@ -52,8 +52,6 @@
 	
 	            <ul class="list-group" th:each="catalog : ${catalogs}" th:object="${catalog}">
 	            	<div class="blog-list-group-item">
-	     	 
-	     				
 	            		<a href="javascript:void(0)" th:attr="catalogId=*{id}" class="blog-query-by-catalog">
 	                    [[*{name}]]
 	                	</a>
@@ -62,10 +60,7 @@
 								data-target="#flipFlop" role="button" th:attr="catalogId=*{id}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
 	                		<a href="javascript:void(0)" th:if="${isCatalogsOwner}" class="blog-delete-catalog" th:attr="catalogId=*{id}"><i class="fa fa-times" aria-hidden="true"></i></a>
 	            		</span>
-	   
 	            	</div>
- 
- 
 	            </ul>
 	        </div>
 	      </div>
